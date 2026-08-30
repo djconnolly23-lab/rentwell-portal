@@ -59,11 +59,9 @@ export default function RentwellLandingPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white flex flex-col relative overflow-hidden font-sans">
-      {/* Background Decorative Glows */}
       <div className="absolute top-0 right-0 w-[550px] h-[550px] bg-blue-600/10 blur-[140px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-600/10 blur-[140px] rounded-full pointer-events-none" />
 
-      {/* Top Navigation */}
       <header className="relative z-10 w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
         <div className="flex items-center space-x-2.5">
           <div className="w-6 h-6 rounded bg-cyan-400 flex items-center justify-center font-black text-xs text-slate-950">
@@ -95,9 +93,7 @@ export default function RentwellLandingPage() {
         </div>
       </header>
 
-      {/* Main Hero Section */}
       <main className="relative z-10 flex-1 max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-12 py-12 lg:py-24">
-        {/* Left Column: Copy */}
         <div className="w-full lg:w-1/2 space-y-6 text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/40 text-cyan-400 text-xs font-semibold uppercase tracking-wider">
             <span>●</span> Rental Property Management
@@ -127,7 +123,6 @@ export default function RentwellLandingPage() {
           </div>
         </div>
 
-        {/* Right Column: Portal Metrics Card */}
         <div className="w-full lg:w-1/2 flex justify-center">
           <div className="w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-5">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -169,7 +164,6 @@ export default function RentwellLandingPage() {
         </div>
       </main>
 
-      {/* Sign In / Sign Up Modal */}
       {authOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl text-slate-100">

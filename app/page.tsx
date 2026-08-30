@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -40,7 +41,7 @@ export default function RentwellLandingPage() {
         if (error) throw error;
         setMessage({ type: 'success', text: 'Account created! Redirecting...' });
         setTimeout(() => {
-          window.location.href = '/dashboard';
+          window.location.href = '/rentwell/dashboard';
         }, 1200);
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -48,7 +49,7 @@ export default function RentwellLandingPage() {
           password,
         });
         if (error) throw error;
-        window.location.href = '/dashboard';
+        window.location.href = '/rentwell/dashboard';
       }
     } catch (err: any) {
       setMessage({ type: 'error', text: err.message || 'An error occurred.' });
@@ -58,97 +59,109 @@ export default function RentwellLandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col relative overflow-hidden font-sans">
-      <div className="absolute top-0 right-0 w-[550px] h-[550px] bg-blue-600/10 blur-[140px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-600/10 blur-[140px] rounded-full pointer-events-none" />
+    <div className="min-h-screen bg-[#040D1A] text-white flex flex-col relative overflow-hidden font-sans selection:bg-[#6EBE3B] selection:text-slate-950">
+      {/* Brand Glowing Ambient Gradients */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#002D56]/40 blur-[150px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[550px] h-[550px] bg-[#6EBE3B]/10 blur-[150px] rounded-full pointer-events-none" />
 
-      <header className="relative z-10 w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
-        <div className="flex items-center space-x-2.5">
-          <div className="w-6 h-6 rounded bg-cyan-400 flex items-center justify-center font-black text-xs text-slate-950">
-            R
+      {/* Navigation Header */}
+      <header className="relative z-10 w-full max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="flex items-center">
+          <div className="bg-white/95 rounded-xl px-3 py-1.5 shadow-md flex items-center justify-center">
+            <Image
+              src="/rentwell-logo.png"
+              alt="Rentwell"
+              width={160}
+              height={44}
+              priority
+              className="h-9 w-auto object-contain"
+            />
           </div>
-          <span className="text-2xl font-black tracking-tight text-white">rentwell</span>
         </div>
 
         <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
-          <a href="#features" className="hover:text-cyan-400 transition">Features</a>
-          <a href="#landlords" className="hover:text-cyan-400 transition">Landlords</a>
-          <a href="#tenants" className="hover:text-cyan-400 transition">Tenants</a>
-          <a href="#pricing" className="hover:text-cyan-400 transition">Pricing</a>
+          <a href="#features" className="hover:text-[#6EBE3B] transition duration-150">Features</a>
+          <a href="#landlords" className="hover:text-[#6EBE3B] transition duration-150">Landlords</a>
+          <a href="#tenants" className="hover:text-[#6EBE3B] transition duration-150">Tenants</a>
+          <a href="#pricing" className="hover:text-[#6EBE3B] transition duration-150">Pricing</a>
         </nav>
 
         <div className="flex items-center space-x-3">
           <button
             onClick={() => openAuth(false)}
-            className="px-5 py-2 text-sm font-medium text-slate-200 border border-slate-700 rounded-lg hover:border-slate-500 transition"
+            className="px-5 py-2 text-sm font-semibold text-slate-200 border border-[#002D56] bg-[#081B33]/60 hover:bg-[#002D56]/80 rounded-xl transition duration-150"
           >
             Log in
           </button>
           <button
             onClick={() => openAuth(true)}
-            className="px-5 py-2 text-sm font-semibold text-slate-950 bg-white rounded-lg hover:bg-slate-100 transition shadow-sm"
+            className="px-5 py-2 text-sm font-bold text-slate-950 bg-[#6EBE3B] hover:bg-[#5da730] rounded-xl transition duration-150 shadow-md shadow-[#6EBE3B]/20"
           >
             Sign up
           </button>
         </div>
       </header>
 
-      <main className="relative z-10 flex-1 max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-12 py-12 lg:py-24">
+      {/* Main Hero Section */}
+      <main className="relative z-10 flex-1 max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-12 py-12 lg:py-20">
+        {/* Left Column: Heading & Value Prop */}
         <div className="w-full lg:w-1/2 space-y-6 text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/40 text-cyan-400 text-xs font-semibold uppercase tracking-wider">
-            <span>●</span> Rental Property Management
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#081B33] border border-[#002D56] text-[#6EBE3B] text-xs font-semibold uppercase tracking-wider">
+            <span className="w-2 h-2 rounded-full bg-[#6EBE3B] animate-pulse" />
+            Modern Property Management
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
-            Where landlords go to get it right.
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15]">
+            Where landlords go to <span className="text-[#6EBE3B]">get it right.</span>
           </h1>
 
           <p className="text-lg text-slate-300 max-w-xl leading-relaxed">
-            Screen tenants, create custom leases, collect payments, and manage property maintenance all in one seamless dashboard.
+            Screen tenants with confidence, generate compliant digital leases, collect automatic rent payments, and streamline maintenance tickets in one place.
           </p>
 
-          <div className="flex flex-wrap gap-4 pt-2">
+          <div className="flex flex-wrap items-center gap-4 pt-3">
             <button
               onClick={() => openAuth(true)}
-              className="px-8 py-3.5 rounded-xl bg-cyan-400 text-slate-950 font-bold text-base hover:bg-cyan-300 transition shadow-lg shadow-cyan-400/20"
+              className="px-8 py-3.5 rounded-xl bg-[#6EBE3B] hover:bg-[#5da730] text-slate-950 font-bold text-base transition duration-150 shadow-xl shadow-[#6EBE3B]/25"
             >
               Get Started Free
             </button>
             <button
               onClick={() => openAuth(false)}
-              className="px-8 py-3.5 rounded-xl bg-slate-800 border border-slate-700 text-white font-semibold text-base hover:bg-slate-700 transition"
+              className="px-8 py-3.5 rounded-xl bg-[#081B33] border border-[#002D56] text-slate-100 font-semibold text-base hover:bg-[#002D56] transition duration-150"
             >
               Access Portal
             </button>
           </div>
         </div>
 
+        {/* Right Column: Portal Metric Preview Card */}
         <div className="w-full lg:w-1/2 flex justify-center">
-          <div className="w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-2xl p-6 backdrop-blur-xl shadow-2xl space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <span className="text-xs font-mono uppercase tracking-wider text-slate-400">Rentwell Portal Overview</span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                Connected
+          <div className="w-full max-w-md bg-[#081B33]/90 border border-[#002D56] rounded-2xl p-6 backdrop-blur-2xl shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-[#002D56]/80 pb-3">
+              <span className="text-xs font-mono uppercase tracking-wider text-slate-400">Rentwell Platform Live</span>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#6EBE3B]/10 text-[#6EBE3B] border border-[#6EBE3B]/30 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#6EBE3B]" /> Connected
               </span>
             </div>
 
-            <div className="space-y-3">
-              <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800/80 flex justify-between items-center">
+            <div className="space-y-3.5">
+              <div className="p-4 bg-[#040D1A]/90 rounded-xl border border-[#002D56]/60 flex justify-between items-center">
                 <div>
-                  <p className="text-xs text-slate-400">Current Balance</p>
-                  <p className="text-xl font-bold text-white">$6,400.00</p>
+                  <p className="text-xs font-medium text-slate-400">Total Collected This Month</p>
+                  <p className="text-2xl font-black text-white mt-0.5">$6,400.00</p>
                 </div>
-                <span className="text-xs font-medium text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded-md border border-emerald-800/50">
+                <span className="text-xs font-bold text-[#6EBE3B] bg-[#6EBE3B]/10 px-2.5 py-1 rounded-md border border-[#6EBE3B]/20">
                   +12.4% MoM
                 </span>
               </div>
 
-              <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800/80 flex justify-between items-center">
+              <div className="p-4 bg-[#040D1A]/90 rounded-xl border border-[#002D56]/60 flex justify-between items-center">
                 <div>
-                  <p className="text-xs text-slate-400">Active Units</p>
-                  <p className="text-xl font-bold text-white">8 Units</p>
+                  <p className="text-xs font-medium text-slate-400">Portfolio Occupancy</p>
+                  <p className="text-2xl font-black text-white mt-0.5">8 / 8 Units</p>
                 </div>
-                <span className="text-xs font-medium text-cyan-400 bg-cyan-950/60 px-2.5 py-1 rounded-md border border-cyan-800/50">
+                <span className="text-xs font-bold text-[#6EBE3B] bg-[#6EBE3B]/10 px-2.5 py-1 rounded-md border border-[#6EBE3B]/20">
                   100% Leased
                 </span>
               </div>
@@ -156,7 +169,7 @@ export default function RentwellLandingPage() {
 
             <button
               onClick={() => openAuth(true)}
-              className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold rounded-xl text-sm transition shadow-md"
+              className="w-full py-3.5 bg-gradient-to-r from-[#6EBE3B] to-[#5da730] hover:from-[#5da730] hover:to-[#509129] text-slate-950 font-bold rounded-xl text-sm transition duration-150 shadow-md shadow-[#6EBE3B]/20"
             >
               Open Free Landlord Account →
             </button>
@@ -164,9 +177,10 @@ export default function RentwellLandingPage() {
         </div>
       </main>
 
+      {/* Authentication Modal */}
       {authOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl text-slate-100">
+          <div className="relative w-full max-w-md bg-[#081B33] border border-[#002D56] rounded-2xl p-8 shadow-2xl text-slate-100">
             <button
               onClick={() => setAuthOpen(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold"
@@ -193,7 +207,7 @@ export default function RentwellLandingPage() {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Jane Doe"
-                    className="w-full px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 text-sm"
+                    className="w-full px-4 py-2.5 rounded-lg bg-[#040D1A] border border-[#002D56] text-white placeholder-slate-500 focus:outline-none focus:border-[#6EBE3B] text-sm"
                   />
                 </div>
               )}
@@ -206,7 +220,7 @@ export default function RentwellLandingPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 text-sm"
+                  className="w-full px-4 py-2.5 rounded-lg bg-[#040D1A] border border-[#002D56] text-white placeholder-slate-500 focus:outline-none focus:border-[#6EBE3B] text-sm"
                 />
               </div>
 
@@ -218,7 +232,7 @@ export default function RentwellLandingPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 text-sm"
+                  className="w-full px-4 py-2.5 rounded-lg bg-[#040D1A] border border-[#002D56] text-white placeholder-slate-500 focus:outline-none focus:border-[#6EBE3B] text-sm"
                 />
               </div>
 
@@ -227,7 +241,7 @@ export default function RentwellLandingPage() {
                   className={`p-3 rounded-lg text-xs font-medium ${
                     message.type === 'error'
                       ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-                      : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                      : 'bg-[#6EBE3B]/10 text-[#6EBE3B] border border-[#6EBE3B]/20'
                   }`}
                 >
                   {message.text}
@@ -237,7 +251,7 @@ export default function RentwellLandingPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold rounded-xl text-sm transition disabled:opacity-50 mt-2"
+                className="w-full py-3 bg-[#6EBE3B] hover:bg-[#5da730] text-slate-950 font-bold rounded-xl text-sm transition duration-150 disabled:opacity-50 mt-2 shadow-md shadow-[#6EBE3B]/20"
               >
                 {loading ? 'Processing...' : isSignUp ? 'Create Account' : 'Sign In'}
               </button>
@@ -250,7 +264,7 @@ export default function RentwellLandingPage() {
                   setIsSignUp(!isSignUp);
                   setMessage(null);
                 }}
-                className="text-cyan-400 font-semibold hover:underline ml-1"
+                className="text-[#6EBE3B] font-semibold hover:underline ml-1"
               >
                 {isSignUp ? 'Log in' : 'Sign up'}
               </button>

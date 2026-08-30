@@ -1,8 +1,9 @@
-import "./globals.css";
+import type { Metadata } from 'next';
+import './globals.css';
 
-export const metadata = {
-  title: "Rentwell Portal",
-  description: "Rental property management portal",
+export const metadata: Metadata = {
+  title: 'Rentwell Portal',
+  description: 'Rental property management and operations portal',
 };
 
 export default function RootLayout({
@@ -11,8 +12,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="antialiased bg-slate-950 text-white">
+    <html lang="en" className="dark">
+      <body className="min-h-screen bg-slate-950 text-slate-100 antialiased font-sans">
         {children}
       </body>
     </html>

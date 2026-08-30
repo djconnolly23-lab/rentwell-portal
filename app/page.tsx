@@ -3,14 +3,48 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { createClient } from '@supabase/supabase-js';
+import DocumentTranslator from '@/components/DocumentTranslator';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 );
 
+const languages = [
+  { code: 'en', label: 'English', native: 'English', flag: '🇺🇸' },
+  { code: 'es', label: 'Spanish', native: 'Español', flag: '🇪🇸' },
+  { code: 'km', label: 'Khmer', native: 'ភាសាខ្មែរ', flag: '🇰🇭' },
+  { code: 'vi', label: 'Vietnamese', native: 'Tiếng Việt', flag: '🇻🇳' },
+  { code: 'zh', label: 'Chinese (Simp)', native: '简体中文', flag: '🇨🇳' },
+  { code: 'tl', label: 'Tagalog', native: 'Filipino', flag: '🇵🇭' },
+  { code: 'ko', label: 'Korean', native: '한국어', flag: '🇰🇷' },
+  { code: 'ja', label: 'Japanese', native: '日本語', flag: '🇯🇵' },
+  { code: 'fr', label: 'French', native: 'Français', flag: '🇫🇷' },
+  { code: 'de', label: 'German', native: 'Deutsch', flag: '🇩🇪' },
+  { code: 'pt', label: 'Portuguese', native: 'Português', flag: '🇧🇷' },
+  { code: 'ar', label: 'Arabic', native: 'العربية', flag: '🇸🇦' },
+  { code: 'hi', label: 'Hindi', native: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'ru', label: 'Russian', native: 'Русский', flag: '🇷🇺' },
+  { code: 'it', label: 'Italian', native: 'Italiano', flag: '🇮🇹' },
+  { code: 'pl', label: 'Polish', native: 'Polski', flag: '🇵🇱' },
+  { code: 'uk', label: 'Ukrainian', native: 'Українська', flag: '🇺🇦' },
+  { code: 'nl', label: 'Dutch', native: 'Nederlands', flag: '🇳🇱' },
+  { code: 'th', label: 'Thai', native: 'ไทย', flag: '🇹🇭' },
+  { code: 'id', label: 'Indonesian', native: 'Bahasa Indonesia', flag: '🇮🇩' },
+  { code: 'tr', label: 'Turkish', native: 'Türkçe', flag: '🇹🇷' },
+  { code: 'ht', label: 'Haitian Creole', native: 'Kreyòl Ayisyen', flag: '🇭🇹' },
+  { code: 'hmn', label: 'Hmong', native: 'Hmoob', flag: '🇱🇦' },
+  { code: 'so', label: 'Somali', native: 'Soomaali', flag: '🇸🇴' },
+  { code: 'my', label: 'Burmese', native: 'မြန်မာဘာသာ', flag: '🇲🇲' },
+];
+
 export default function RentwellLandingPage() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [selectedLang, setSelectedLang] = useState('en');
+  const [langSearch, setLangSearch] = useState('');
+  const [translatorOpen, setTranslatorOpen] = useState(false);
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+
   const [authOpen, setAuthOpen] = useState(false);
   const [isSignUp, setIsSignUp] = useState(true);
   const [email, setEmail] = useState('');
@@ -19,16 +53,18 @@ export default function RentwellLandingPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
 
-  // Initialize theme from localStorage (Defaults to Light Mode)
   useEffect(() => {
-    const saved = localStorage.getItem('rentwell-theme') as 'light' | 'dark' | null;
-    if (saved === 'dark') {
+    const savedTheme = localStorage.getItem('rentwell-theme') as 'light' | 'dark' | null;
+    if (savedTheme === 'dark') {
       setTheme('dark');
       document.documentElement.classList.add('dark');
     } else {
       setTheme('light');
       document.documentElement.classList.remove('dark');
     }
+
+    const savedLang = localStorage.getItem('rentwell-lang');
+    if (savedLang) setSelectedLang(savedLang);
   }, []);
 
   const toggleTheme = () => {
@@ -41,6 +77,13 @@ export default function RentwellLandingPage() {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('rentwell-theme', 'light');
     }
+  };
+
+  const changeLanguage = (code: string) => {
+    setSelectedLang(code);
+    localStorage.setItem('rentwell-lang', code);
+    setLangDropdownOpen(false);
+    setLangSearch('');
   };
 
   const openAuth = (signUpMode: boolean) => {
@@ -60,7 +103,7 @@ export default function RentwellLandingPage() {
           email,
           password,
           options: {
-            data: { full_name: fullName, portal: 'rentwell' },
+            data: { full_name: fullName, portal: 'rentwell', preferred_lang: selectedLang },
           },
         });
         if (error) throw error;
@@ -82,6 +125,15 @@ export default function RentwellLandingPage() {
       setLoading(false);
     }
   };
+
+  const filteredLanguages = languages.filter(
+    (l) =>
+      l.label.toLowerCase().includes(langSearch.toLowerCase()) ||
+      l.native.toLowerCase().includes(langSearch.toLowerCase()) ||
+      l.code.toLowerCase().includes(langSearch.toLowerCase())
+  );
+
+  const activeLanguageObj = languages.find((l) => l.code === selectedLang) || languages[0];
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#040D1A] text-slate-900 dark:text-white flex flex-col relative overflow-hidden font-sans transition-colors duration-200 selection:bg-[#6EBE3B] selection:text-slate-950">
@@ -111,12 +163,76 @@ export default function RentwellLandingPage() {
           <a href="#pricing" className="hover:text-[#002D56] dark:hover:text-[#6EBE3B] transition">Pricing</a>
         </nav>
 
-        <div className="flex items-center space-x-3">
-          {/* Light / Dark Mode Toggle Button */}
+        <div className="flex items-center space-x-2.5">
+          {/* Document Translator Tool Button */}
+          <button
+            onClick={() => setTranslatorOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-[#002D56] bg-white dark:bg-[#081B33]/80 hover:bg-slate-100 dark:hover:bg-[#002D56] rounded-xl transition shadow-sm"
+            title="Translate Leases & Legal Notices"
+          >
+            <svg className="w-4 h-4 text-[#6EBE3B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+            </svg>
+            <span className="hidden sm:inline">Translator</span>
+          </button>
+
+          {/* 25-Language Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-[#002D56] bg-white dark:bg-[#081B33]/80 hover:bg-slate-100 dark:hover:bg-[#002D56] rounded-xl transition shadow-sm"
+            >
+              <span>{activeLanguageObj.flag}</span>
+              <span className="uppercase font-mono">{activeLanguageObj.code}</span>
+              <svg className="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {langDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-[#081B33] border border-slate-200 dark:border-[#002D56] rounded-2xl shadow-2xl py-2 z-50">
+                <div className="px-3 pb-2 border-b border-slate-100 dark:border-[#002D56]">
+                  <input
+                    type="text"
+                    value={langSearch}
+                    onChange={(e) => setLangSearch(e.target.value)}
+                    placeholder="Search 25 languages..."
+                    className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-[#040D1A] border border-slate-200 dark:border-[#002D56] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#6EBE3B]"
+                    autoFocus
+                  />
+                </div>
+
+                <div className="max-h-64 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/40">
+                  {filteredLanguages.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => changeLanguage(lang.code)}
+                      className={`w-full text-left px-3.5 py-2 flex items-center justify-between text-xs hover:bg-slate-50 dark:hover:bg-[#002D56]/60 transition ${
+                        selectedLang === lang.code
+                          ? 'text-[#6EBE3B] font-bold bg-emerald-50/50 dark:bg-[#002D56]/30'
+                          : 'text-slate-700 dark:text-slate-300'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span>{lang.flag}</span>
+                        <span>{lang.label}</span>
+                      </span>
+                      <span className="text-[11px] opacity-60 font-mono">{lang.native}</span>
+                    </button>
+                  ))}
+                  {filteredLanguages.length === 0 && (
+                    <p className="text-center py-3 text-xs text-slate-400">No language found</p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Light / Dark Mode Toggle */}
           <button
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="p-2.5 rounded-xl border border-slate-300 dark:border-[#002D56] bg-white dark:bg-[#081B33]/80 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#002D56] transition"
+            className="p-2.5 rounded-xl border border-slate-300 dark:border-[#002D56] bg-white dark:bg-[#081B33]/80 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#002D56] transition shadow-sm"
           >
             {theme === 'light' ? (
               <svg className="w-4 h-4 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -131,26 +247,25 @@ export default function RentwellLandingPage() {
 
           <button
             onClick={() => openAuth(false)}
-            className="px-5 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-[#002D56] bg-white dark:bg-[#081B33]/60 hover:bg-slate-100 dark:hover:bg-[#002D56]/80 rounded-xl transition"
+            className="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-[#002D56] bg-white dark:bg-[#081B33]/60 hover:bg-slate-100 dark:hover:bg-[#002D56]/80 rounded-xl transition"
           >
             Log in
           </button>
           <button
             onClick={() => openAuth(true)}
-            className="px-5 py-2 text-sm font-bold text-slate-950 bg-[#6EBE3B] hover:bg-[#5da730] rounded-xl transition shadow-md shadow-[#6EBE3B]/20"
+            className="px-4 py-2 text-sm font-bold text-slate-950 bg-[#6EBE3B] hover:bg-[#5da730] rounded-xl transition shadow-md shadow-[#6EBE3B]/20"
           >
             Sign up
           </button>
         </div>
       </header>
 
-      {/* Main Hero */}
+      {/* Hero Section */}
       <main className="relative z-10 flex-1 max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-12 py-12 lg:py-20">
-        {/* Left Column */}
         <div className="w-full lg:w-1/2 space-y-6 text-left">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-[#081B33] border border-emerald-200 dark:border-[#002D56] text-[#002D56] dark:text-[#6EBE3B] text-xs font-bold uppercase tracking-wider">
             <span className="w-2 h-2 rounded-full bg-[#6EBE3B] animate-pulse" />
-            Modern Property Management
+            Modern Multilingual Property Management
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.15]">
@@ -158,7 +273,7 @@ export default function RentwellLandingPage() {
           </h1>
 
           <p className="text-lg text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed">
-            Screen tenants with confidence, generate compliant digital leases, collect automatic rent payments, and streamline maintenance tickets in one place.
+            Screen tenants with confidence, generate digital leases in 25 languages, collect automatic rent payments, and manage property operations in one place.
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pt-3">
@@ -169,15 +284,18 @@ export default function RentwellLandingPage() {
               Get Started Free
             </button>
             <button
-              onClick={() => openAuth(false)}
-              className="px-8 py-3.5 rounded-xl bg-white dark:bg-[#081B33] border border-slate-300 dark:border-[#002D56] text-slate-800 dark:text-slate-100 font-semibold text-base hover:bg-slate-100 dark:hover:bg-[#002D56] transition duration-150 shadow-sm"
+              onClick={() => setTranslatorOpen(true)}
+              className="px-8 py-3.5 rounded-xl bg-white dark:bg-[#081B33] border border-slate-300 dark:border-[#002D56] text-slate-800 dark:text-slate-100 font-semibold text-base hover:bg-slate-100 dark:hover:bg-[#002D56] transition duration-150 shadow-sm flex items-center gap-2"
             >
-              Access Portal
+              <svg className="w-4 h-4 text-[#6EBE3B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+              </svg>
+              Try Translator (25 Languages)
             </button>
           </div>
         </div>
 
-        {/* Right Column: Portal Metric Preview Card */}
+        {/* Metric Card */}
         <div className="w-full lg:w-1/2 flex justify-center">
           <div className="w-full max-w-md bg-white dark:bg-[#081B33]/90 border border-slate-200 dark:border-[#002D56] rounded-2xl p-6 shadow-xl dark:shadow-2xl space-y-5 transition-colors duration-200">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#002D56]/80 pb-3">
@@ -218,6 +336,30 @@ export default function RentwellLandingPage() {
           </div>
         </div>
       </main>
+
+      {/* Document Translator Modal */}
+      {translatorOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+          <div className="relative w-full max-w-2xl bg-white dark:bg-[#081B33] border border-slate-200 dark:border-[#002D56] rounded-2xl p-6 shadow-2xl text-slate-900 dark:text-slate-100 max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setTranslatorOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-lg font-bold"
+            >
+              ✕
+            </button>
+            <div className="mb-4">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <span className="p-1.5 rounded-lg bg-[#6EBE3B]/20 text-[#6EBE3B]">🌐</span>
+                Document & Lease Translator
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Translate leases, addenda, and notices across 25 supported languages.
+              </p>
+            </div>
+            <DocumentTranslator />
+          </div>
+        </div>
+      )}
 
       {/* Auth Modal */}
       {authOpen && (

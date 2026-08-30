@@ -1,14 +1,13 @@
-export default {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
   theme: {
-    extend: {
-      colors: {
-        rentwell: {
-          blue: '#0A2E73',
-          green: '#2FA84F',
-          white: '#FFFFFF',
-          charcoal: '#171717',
-        },
-      },
-    },
+    extend: {},
   },
-}
+  plugins: [],
+};

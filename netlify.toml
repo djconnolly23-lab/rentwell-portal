@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build"
+  publish = "dist"   # or "build" if CRA
+
+[dev]
+  command = "npm run dev"
+  port = 3000
+
+[context.production.environment]
+  SUPABASE_URL = "https://your-project.supabase.co"
+  SUPABASE_KEY = "your-public-anon-key"
+  STRIPE_SECRET = "sk_live_..."
+  STRIPE_WEBHOOK_SECRET = "whsec_..."

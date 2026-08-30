@@ -1,0 +1,17 @@
+{
+  "login": {
+    "title": "Iniciar sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "button": "Entrar",
+    "google": "Iniciar sesión con Google"
+  },
+  "signup": {
+    "title": "Crear cuenta",
+    "button": "Registrarse"
+  },
+  "dashboard": {
+    "title": "Panel del propietario",
+    "overview": "Administre su cartera: propiedades, contratos, pagos, mantenimiento y reportes."
+  }
+}

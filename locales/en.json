@@ -1,0 +1,13 @@
+{
+  "login": {
+    "title": "Login",
+    "email": "Email",
+    "password": "Password",
+    "button": "Login",
+    "google": "Sign in with Google"
+  },
+  "signup": {
+    "title": "Create Account",
+    "button": "Sign Up"
+  }
+}

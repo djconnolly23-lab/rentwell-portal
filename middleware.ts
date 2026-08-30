@@ -1,47 +1,41 @@
-import { type NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+  const { pathname } = request.nextUrl;
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({
-            request,
-          })
-          cookiesToSet.forEach(({ name, value }) =>
-            supabaseResponse.cookies.set(name, value)
-          )
-        },
-      },
-    }
-  )
+  // List of paths that anyone can visit without logging in
+  const publicPaths = ['/', '/rentwell', '/dispatchly', '/auth'];
 
-  // Refresh session if expired
-  const { data: { user } } = await supabase.auth.getUser()
-  const url = request.nextUrl
-  const pathname = url.pathname
+  const isPublicPath = publicPaths.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`)
+  );
 
-  // Protect Operations & Portals
-  if (!user && (pathname.startsWith('/superuser') || pathname.startsWith('/rentwell-support') || pathname.startsWith('/dispatchly-support') || pathname.startsWith('/client') || pathname.startsWith('/renter'))) {
-    return NextResponse.redirect(new URL('/login', request.url))
+  // If it's a public landing page, let the request pass through directly
+  if (isPublicPath) {
+    return NextResponse.next();
   }
 
-  return supabaseResponse
+  // Allow static assets, images, and API routes to pass through
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.includes('.')
+  ) {
+    return NextResponse.next();
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder files
+     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
-}
+};

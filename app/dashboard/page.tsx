@@ -10,11 +10,10 @@ const supabase = createClient(
 );
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadUser() {
+    async function checkAuth() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -24,23 +23,22 @@ export default function DashboardPage() {
         return;
       }
 
-      setUser(user);
       setLoading(false);
     }
 
-    loadUser();
+    checkAuth();
   }, []);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-300">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm font-medium">Loading your portal...</p>
+          <div className="w-8 h-8 border-2 border-[#6EBE3B] border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm font-medium">Loading portal...</p>
         </div>
       </div>
     );
   }
 
-  return <ClientDashboard user={user} />;
+  return <ClientDashboard />;
 }

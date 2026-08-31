@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
-import { languages, getTranslations } from '@/lib/translations';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -12,10 +12,8 @@ const supabase = createClient(
 
 export default function RentwellLandingPage() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [selectedLang, setSelectedLang] = useState('en');
-  const [langSearch, setLangSearch] = useState('');
-  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
 
+  // Auth Modal State
   const [authOpen, setAuthOpen] = useState(false);
   const [isSignUp, setIsSignUp] = useState(true);
   const [email, setEmail] = useState('');
@@ -33,11 +31,6 @@ export default function RentwellLandingPage() {
       setTheme('light');
       document.documentElement.classList.remove('dark');
     }
-
-    const savedLang = localStorage.getItem('rentwell-lang');
-    if (savedLang) {
-      setSelectedLang(savedLang);
-    }
   }, []);
 
   const toggleTheme = () => {
@@ -50,13 +43,6 @@ export default function RentwellLandingPage() {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('rentwell-theme', 'light');
     }
-  };
-
-  const changeLanguage = (code: string) => {
-    setSelectedLang(code);
-    localStorage.setItem('rentwell-lang', code);
-    setLangDropdownOpen(false);
-    setLangSearch('');
   };
 
   const openAuth = (signUpMode: boolean) => {
@@ -76,7 +62,7 @@ export default function RentwellLandingPage() {
           email,
           password,
           options: {
-            data: { full_name: fullName, portal: 'rentwell', preferred_lang: selectedLang },
+            data: { full_name: fullName, portal: 'rentwell' },
           },
         });
         if (error) throw error;
@@ -99,110 +85,18 @@ export default function RentwellLandingPage() {
     }
   };
 
-  // Full-page translation schema
-  const t = getTranslations(selectedLang);
-
-  const filteredLanguages = languages.filter(
-    (l) =>
-      l.label.toLowerCase().includes(langSearch.toLowerCase()) ||
-      l.native.toLowerCase().includes(langSearch.toLowerCase()) ||
-      l.code.toLowerCase().includes(langSearch.toLowerCase())
-  );
-
-  const activeLanguageObj =
-    languages.find((l) => l.code === selectedLang) ||
-    languages.find((l) => l.code === 'en') ||
-    languages[0];
-
-  const comparisonRows = [
-    {
-      feature: t.compVA,
-      rentwell: t.compVADesc,
-      turbotenant: '—',
-      buildium: '—',
-      appfolio: '—',
-      avail: '—',
-    },
-    {
-      feature: t.compAI,
-      rentwell: t.compAIDesc,
-      turbotenant: '—',
-      buildium: '—',
-      appfolio: '—',
-      avail: '—',
-    },
-    {
-      feature: t.compMulti,
-      rentwell: t.compMultiDesc,
-      turbotenant: '—',
-      buildium: '—',
-      appfolio: '—',
-      avail: '—',
-    },
-    {
-      feature: t.compScreening,
-      rentwell: t.compScreeningDesc,
-      turbotenant: '✅',
-      buildium: '✅',
-      appfolio: '✅',
-      avail: '✅',
-    },
-    {
-      feature: t.compLease,
-      rentwell: t.compLeaseDesc,
-      turbotenant: '✅',
-      buildium: '✅',
-      appfolio: '✅',
-      avail: '✅',
-    },
-    {
-      feature: t.compRent,
-      rentwell: t.compRentDesc,
-      turbotenant: '✅',
-      buildium: '✅',
-      appfolio: '✅',
-      avail: '✅',
-    },
-    {
-      feature: t.compOwner,
-      rentwell: t.compOwnerDesc,
-      turbotenant: '—',
-      buildium: '✅',
-      appfolio: '✅',
-      avail: '—',
-    },
-    {
-      feature: t.compAccounting,
-      rentwell: t.compAccountingDesc,
-      turbotenant: 'Basic',
-      buildium: '✅',
-      appfolio: '✅',
-      avail: 'Basic',
-    },
-    {
-      feature: t.compVendor,
-      rentwell: t.compVendorDesc,
-      turbotenant: '—',
-      buildium: '✅',
-      appfolio: '✅',
-      avail: '—',
-    },
-    {
-      feature: t.compGuarantees,
-      rentwell: t.compGuaranteesDesc,
-      turbotenant: '—',
-      buildium: '—',
-      appfolio: '—',
-      avail: '—',
-    },
-    {
-      feature: t.compGlobal,
-      rentwell: t.compGlobalDesc,
-      turbotenant: '—',
-      buildium: '—',
-      appfolio: '—',
-      avail: '—',
-    },
+  const comparisonData = [
+    { feature: 'Virtual Assistants', rentwell: '✅ Built‑in assistants', turbotenant: '—', buildium: '—', appfolio: '—', avail: '—' },
+    { feature: 'AI Assistant', rentwell: '✅ Natural language queries', turbotenant: '—', buildium: '—', appfolio: '—', avail: '—' },
+    { feature: 'Multilingual Support', rentwell: '✅ Tenant & owner portals', turbotenant: '—', buildium: '—', appfolio: '—', avail: '—' },
+    { feature: 'Tenant Screening', rentwell: '✅ Integrated', turbotenant: '✅', buildium: '✅', appfolio: '✅', avail: '✅' },
+    { feature: 'Lease Management', rentwell: '✅ Digital leases + addendums', turbotenant: '✅', buildium: '✅', appfolio: '✅', avail: '✅' },
+    { feature: 'Rent Collection', rentwell: '✅ Stripe + ledger', turbotenant: '✅', buildium: '✅', appfolio: '✅', avail: '✅' },
+    { feature: 'Owner Portal', rentwell: '✅ Advanced dashboards', turbotenant: '—', buildium: '✅', appfolio: '✅', avail: '—' },
+    { feature: 'Accounting Engine', rentwell: '✅ GAAP double‑entry', turbotenant: 'Basic', buildium: '✅', appfolio: '✅', avail: 'Basic' },
+    { feature: 'Vendor Management', rentwell: '✅ Work orders + invoices', turbotenant: '—', buildium: '✅', appfolio: '✅', avail: '—' },
+    { feature: 'Guarantees', rentwell: '✅ Eviction, pet, rent, happiness', turbotenant: '—', buildium: '—', appfolio: '—', avail: '—' },
+    { feature: 'Global Support', rentwell: '✅ Multi‑entity, multi‑currency', turbotenant: '—', buildium: '—', appfolio: '—', avail: '—' },
   ];
 
   return (
@@ -214,7 +108,7 @@ export default function RentwellLandingPage() {
       {/* Header Navigation with 5x Enlarged Logo */}
       <header className="relative z-50 w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
         <div className="flex items-center">
-          <div className="rounded-2xl p-2.5 flex items-center justify-center bg-white/95 dark:bg-white shadow-md border border-slate-200/80 dark:border-transparent">
+          <Link href="/" className="rounded-2xl p-2.5 flex items-center justify-center bg-white/95 dark:bg-white shadow-md border border-slate-200/80 dark:border-transparent">
             <Image
               src="/rentwell-logo.png"
               alt="RentWell"
@@ -223,73 +117,19 @@ export default function RentwellLandingPage() {
               priority
               className="h-14 sm:h-16 w-auto object-contain"
             />
-          </div>
+          </Link>
         </div>
 
-        {/* Dynamic Nav Links */}
         <nav className="hidden lg:flex items-center space-x-7 text-sm font-semibold text-slate-600 dark:text-slate-300">
-          <a href="#features" className="hover:text-[#002D56] dark:hover:text-[#6EBE3B] transition">{t.navFeatures}</a>
-          <a href="#landlords" className="hover:text-[#002D56] dark:hover:text-[#6EBE3B] transition">{t.navLandlords}</a>
-          <a href="#tenants" className="hover:text-[#002D56] dark:hover:text-[#6EBE3B] transition">{t.navTenants}</a>
-          <a href="#virtual-assistants" className="hover:text-[#002D56] dark:hover:text-[#6EBE3B] transition">{t.navVA}</a>
-          <a href="#comparison" className="hover:text-[#002D56] dark:hover:text-[#6EBE3B] transition">{t.navCompare}</a>
-          <a href="#pricing" className="hover:text-[#002D56] dark:hover:text-[#6EBE3B] transition">{t.navPricing}</a>
+          <a href="#features" className="hover:text-[#002D56] dark:hover:text-[#6EBE3B] transition">Features</a>
+          <a href="#landlords" className="hover:text-[#002D56] dark:hover:text-[#6EBE3B] transition">Landlords</a>
+          <a href="#tenants" className="hover:text-[#002D56] dark:hover:text-[#6EBE3B] transition">Tenants</a>
+          <a href="#virtual-assistants" className="hover:text-[#002D56] dark:hover:text-[#6EBE3B] transition">Virtual Assistants</a>
+          <a href="#comparison" className="hover:text-[#002D56] dark:hover:text-[#6EBE3B] transition">Compare</a>
+          <Link href="/pricing" className="hover:text-[#002D56] dark:hover:text-[#6EBE3B] transition font-bold">Pricing</Link>
         </nav>
 
-        <div className="flex items-center space-x-2.5">
-          {/* Alphabetical 25-Language Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-[#002D56] bg-white dark:bg-[#081B33]/80 hover:bg-slate-100 dark:hover:bg-[#002D56] rounded-xl transition shadow-sm"
-            >
-              <span>{activeLanguageObj.flag}</span>
-              <span className="uppercase font-mono">{activeLanguageObj.code}</span>
-              <svg className="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            {langDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-[#081B33] border border-slate-200 dark:border-[#002D56] rounded-2xl shadow-2xl py-2 z-50">
-                <div className="px-3 pb-2 border-b border-slate-100 dark:border-[#002D56]">
-                  <input
-                    type="text"
-                    value={langSearch}
-                    onChange={(e) => setLangSearch(e.target.value)}
-                    placeholder="Search 25 languages..."
-                    className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-[#040D1A] border border-slate-200 dark:border-[#002D56] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#6EBE3B]"
-                    autoFocus
-                  />
-                </div>
-
-                <div className="max-h-64 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/40">
-                  {filteredLanguages.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => changeLanguage(lang.code)}
-                      className={`w-full text-left px-3.5 py-2 flex items-center justify-between text-xs hover:bg-slate-50 dark:hover:bg-[#002D56]/60 transition ${
-                        selectedLang === lang.code
-                          ? 'text-[#6EBE3B] font-bold bg-emerald-50/50 dark:bg-[#002D56]/30'
-                          : 'text-slate-700 dark:text-slate-300'
-                      }`}
-                    >
-                      <span className="flex items-center gap-2">
-                        <span>{lang.flag}</span>
-                        <span>{lang.label}</span>
-                      </span>
-                      <span className="text-[11px] opacity-60 font-mono">{lang.native}</span>
-                    </button>
-                  ))}
-                  {filteredLanguages.length === 0 && (
-                    <p className="text-center py-3 text-xs text-slate-400">No language found</p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Theme Toggle Button */}
+        <div className="flex items-center space-x-3">
           <button
             onClick={toggleTheme}
             aria-label="Toggle theme"
@@ -310,14 +150,14 @@ export default function RentwellLandingPage() {
             onClick={() => openAuth(false)}
             className="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-[#002D56] bg-white dark:bg-[#081B33]/60 hover:bg-slate-100 dark:hover:bg-[#002D56]/80 rounded-xl transition"
           >
-            {t.navLogin}
+            Log in
           </button>
-          <button
-            onClick={() => openAuth(true)}
+          <Link
+            href="/pricing"
             className="px-4 py-2 text-sm font-bold text-slate-950 bg-[#6EBE3B] hover:bg-[#5da730] rounded-xl transition shadow-md shadow-[#6EBE3B]/20"
           >
-            {t.navSignup}
-          </button>
+            Get Started For Free
+          </Link>
         </div>
       </header>
 
@@ -326,29 +166,29 @@ export default function RentwellLandingPage() {
         <div className="space-y-6 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-[#081B33] border border-emerald-200 dark:border-[#002D56] text-[#002D56] dark:text-[#6EBE3B] text-xs font-bold uppercase tracking-wider shadow-sm">
             <span className="w-2 h-2 rounded-full bg-[#6EBE3B] animate-pulse" />
-            {t.badge}
+            Smart Property Automation
           </div>
 
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-snug">
-            {t.heroTitle1} <span className="text-[#6EBE3B]">{t.heroHighlight}</span>
+            Smart property management, powered by <span className="text-[#6EBE3B]">Virtual Assistants.</span>
           </h1>
 
           <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-xl mx-auto leading-relaxed">
-            {t.heroSubtitle}
+            Screen tenants with confidence, generate digital leases, collect automatic rent payments, and manage property operations — all with your built-in Virtual Assistant.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 pt-3">
-            <button
-              onClick={() => openAuth(true)}
+            <Link
+              href="/pricing"
               className="px-8 py-3.5 rounded-xl bg-[#6EBE3B] hover:bg-[#5da730] text-slate-950 font-bold text-base transition duration-150 shadow-xl shadow-[#6EBE3B]/25"
             >
-              {t.ctaStart}
-            </button>
+              Get Started For Free
+            </Link>
             <a
               href="#comparison"
               className="px-8 py-3.5 rounded-xl bg-white dark:bg-[#081B33] border border-slate-300 dark:border-[#002D56] text-slate-800 dark:text-slate-100 font-semibold text-base hover:bg-slate-100 dark:hover:bg-[#002D56] transition duration-150 shadow-sm inline-flex items-center gap-2"
             >
-              {t.ctaCompare} ↓
+              See How We Compare ↓
             </a>
           </div>
         </div>
@@ -361,25 +201,25 @@ export default function RentwellLandingPage() {
           <div id="landlords" className="group bg-white dark:bg-[#081B33]/90 border border-slate-200 dark:border-[#002D56] rounded-3xl p-8 shadow-xl hover:shadow-2xl transition duration-200 flex flex-col justify-between">
             <div className="space-y-4">
               <div className="inline-block px-3 py-1 bg-[#002D56]/10 dark:bg-[#002D56] text-[#002D56] dark:text-[#6EBE3B] text-xs font-bold rounded-lg uppercase tracking-wider">
-                {t.forOwners}
+                For Property Owners
               </div>
               <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                {t.landlordTitle}
+                Landlord / Owner
               </h3>
               <p className="text-sm font-semibold text-[#6EBE3B] uppercase tracking-wide">
-                {t.landlordTag}
+                Manage. Grow. Simplify.
               </p>
               <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                {t.landlordDesc}
+                Automate rent collections, screen prospective tenants, coordinate maintenance vendors, and track portfolio ROI with real-time analytics.
               </p>
             </div>
             <div className="pt-6">
-              <button
-                onClick={() => openAuth(true)}
-                className="w-full py-3 bg-[#002D56] hover:bg-[#081B33] text-white font-bold rounded-xl text-sm transition shadow-md"
+              <Link
+                href="/pricing"
+                className="block text-center w-full py-3 bg-[#002D56] hover:bg-[#081B33] text-white font-bold rounded-xl text-sm transition shadow-md"
               >
-                {t.landlordBtn}
-              </button>
+                Explore Landlord Tools →
+              </Link>
             </div>
           </div>
 
@@ -387,16 +227,16 @@ export default function RentwellLandingPage() {
           <div id="tenants" className="group bg-white dark:bg-[#081B33]/90 border border-slate-200 dark:border-[#002D56] rounded-3xl p-8 shadow-xl hover:shadow-2xl transition duration-200 flex flex-col justify-between">
             <div className="space-y-4">
               <div className="inline-block px-3 py-1 bg-[#6EBE3B]/15 text-emerald-800 dark:text-[#6EBE3B] text-xs font-bold rounded-lg uppercase tracking-wider">
-                {t.forRenters}
+                For Residents & Renters
               </div>
               <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                {t.tenantTitle}
+                Renter / Tenant
               </h3>
               <p className="text-sm font-semibold text-[#6EBE3B] uppercase tracking-wide">
-                {t.tenantTag}
+                Find. Rent. Thrive.
               </p>
               <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                {t.tenantDesc}
+                Submit maintenance requests instantly, sign digital leases with ease, set up recurring autopay, and communicate effortlessly.
               </p>
             </div>
             <div className="pt-6">
@@ -404,7 +244,7 @@ export default function RentwellLandingPage() {
                 onClick={() => openAuth(false)}
                 className="w-full py-3 bg-[#6EBE3B] hover:bg-[#5da730] text-slate-950 font-bold rounded-xl text-sm transition shadow-md shadow-[#6EBE3B]/20"
               >
-                {t.tenantBtn}
+                Renter Portal Login →
               </button>
             </div>
           </div>
@@ -414,9 +254,9 @@ export default function RentwellLandingPage() {
       {/* 6-Capability Feature Grid */}
       <section id="features" className="relative z-10 max-w-7xl mx-auto px-6 py-16">
         <div className="text-center space-y-3 mb-12">
-          <p className="text-xs font-mono font-bold uppercase tracking-widest text-[#6EBE3B]">{t.featuresBadge}</p>
+          <p className="text-xs font-mono font-bold uppercase tracking-widest text-[#6EBE3B]">Full-Stack Suite</p>
           <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">
-            {t.featuresTitle}
+            Everything your rental portfolio needs.
           </h2>
         </div>
 
@@ -425,48 +265,60 @@ export default function RentwellLandingPage() {
             <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-[#040D1A] border border-emerald-200 dark:border-[#002D56] flex items-center justify-center text-2xl mb-4">
               🎧
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{t.f1Title}</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{t.f1Desc}</p>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Virtual Assistants</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              Automated VA support for tenant screening, dispatching vendors, tenant communication, marketing and social media, and much more.
+            </p>
           </div>
 
           <div className="bg-white dark:bg-[#081B33]/80 border border-slate-200 dark:border-[#002D56] rounded-2xl p-6 shadow-md hover:border-[#6EBE3B] transition">
             <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-[#040D1A] border border-emerald-200 dark:border-[#002D56] flex items-center justify-center text-2xl mb-4">
               ⚡
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{t.f2Title}</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{t.f2Desc}</p>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Automation & Workflows</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              Automatically handles your rental processes — from lease signing to emails, autopay setup, and recurring rent reminders — so every step runs smoothly without manual effort.
+            </p>
           </div>
 
           <div className="bg-white dark:bg-[#081B33]/80 border border-slate-200 dark:border-[#002D56] rounded-2xl p-6 shadow-md hover:border-[#6EBE3B] transition">
             <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-[#040D1A] border border-emerald-200 dark:border-[#002D56] flex items-center justify-center text-2xl mb-4">
               📊
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{t.f3Title}</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{t.f3Desc}</p>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Advanced Accounting Engine</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              GAAP‑ready double‑entry accounting with P&L, balance sheet, cash flow, rent roll, and tax prep reports. Enterprise‑grade financials built into the platform.
+            </p>
           </div>
 
           <div className="bg-white dark:bg-[#081B33]/80 border border-slate-200 dark:border-[#002D56] rounded-2xl p-6 shadow-md hover:border-[#6EBE3B] transition">
             <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-[#040D1A] border border-emerald-200 dark:border-[#002D56] flex items-center justify-center text-2xl mb-4">
               📝
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{t.f4Title}</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{t.f4Desc}</p>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Lease Management</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              AI‑powered leasing that automates digital agreements, secure e‑signatures, and renewals — keeping every tenant on track while eliminating manual work.
+            </p>
           </div>
 
           <div className="bg-white dark:bg-[#081B33]/80 border border-slate-200 dark:border-[#002D56] rounded-2xl p-6 shadow-md hover:border-[#6EBE3B] transition">
             <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-[#040D1A] border border-emerald-200 dark:border-[#002D56] flex items-center justify-center text-2xl mb-4">
               🛡️
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{t.f5Title}</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{t.f5Desc}</p>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Tenant Screening & Guarantees</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              Nationwide background, credit, and eviction checks paired with comprehensive eviction, pet, and rent payment guarantees.
+            </p>
           </div>
 
           <div className="bg-white dark:bg-[#081B33]/80 border border-slate-200 dark:border-[#002D56] rounded-2xl p-6 shadow-md hover:border-[#6EBE3B] transition">
             <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-[#040D1A] border border-emerald-200 dark:border-[#002D56] flex items-center justify-center text-2xl mb-4">
               🌐
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{t.f6Title}</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{t.f6Desc}</p>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Operations & Global Portfolios</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              Multi-currency, multi-entity support across 25 native languages for domestic and OCONUS property management.
+            </p>
           </div>
         </div>
       </section>
@@ -474,12 +326,12 @@ export default function RentwellLandingPage() {
       {/* Competitor Comparison Section */}
       <section id="comparison" className="relative z-10 max-w-7xl mx-auto px-6 py-16 scroll-mt-20">
         <div className="text-center space-y-4 max-w-3xl mx-auto mb-12">
-          <p className="text-xs font-mono font-bold uppercase tracking-widest text-[#6EBE3B]">{t.compareBadge}</p>
+          <p className="text-xs font-mono font-bold uppercase tracking-widest text-[#6EBE3B]">Market Benchmarks</p>
           <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">
-            {t.compareTitle}
+            How RentWell stacks up against the rest.
           </h2>
           <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-            {t.compareDesc}
+            Most property management platforms cover the basics — leases, rent collection, and maintenance. RentWell goes further with built‑in Virtual Assistants, AI, multilingual support, and enterprise‑grade accounting. Here’s how we compare:
           </p>
         </div>
 
@@ -487,9 +339,9 @@ export default function RentwellLandingPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-slate-200 dark:border-[#002D56] bg-slate-100/70 dark:bg-[#040D1A]/80 text-xs uppercase font-bold tracking-wider text-slate-600 dark:text-slate-300">
-                <th className="py-4 px-5">{t.thFeature}</th>
+                <th className="py-4 px-5">Feature</th>
                 <th className="py-4 px-5 bg-emerald-500/10 text-emerald-700 dark:text-[#6EBE3B] border-x border-emerald-500/20 font-black">
-                  {t.thAdvantage}
+                  RentWell Advantage
                 </th>
                 <th className="py-4 px-4 text-center">TurboTenant</th>
                 <th className="py-4 px-4 text-center">Buildium</th>
@@ -498,7 +350,7 @@ export default function RentwellLandingPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">
-              {comparisonRows.map((row, idx) => (
+              {comparisonData.map((row, idx) => (
                 <tr
                   key={idx}
                   className="hover:bg-slate-50/80 dark:hover:bg-[#002D56]/30 transition"
@@ -532,24 +384,24 @@ export default function RentwellLandingPage() {
       <section className="relative z-10 max-w-5xl mx-auto px-6 py-16 text-center">
         <div className="bg-gradient-to-r from-slate-900 via-[#002D56] to-slate-900 text-white rounded-3xl p-10 sm:p-14 shadow-2xl border border-[#002D56] space-y-6">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight">
-            {t.closingTitle}
+            Choose smarter property management.
           </h2>
           <p className="text-slate-300 text-sm sm:text-base max-w-xl mx-auto">
-            {t.closingDesc}
+            Experience the power of built-in Virtual Assistants, automated accounting, and seamless multilingual property operations.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-            <button
-              onClick={() => openAuth(true)}
+            <Link
+              href="/pricing"
               className="px-9 py-4 rounded-xl bg-[#6EBE3B] hover:bg-[#5da730] text-slate-950 font-bold text-base transition duration-150 shadow-xl shadow-[#6EBE3B]/30"
             >
-              {t.closingBtn1}
-            </button>
-            <a
-              href="#comparison"
+              Get Started For Free
+            </Link>
+            <Link
+              href="/pricing"
               className="px-9 py-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-base transition duration-150"
             >
-              {t.closingBtn2}
-            </a>
+              See Full Comparison
+            </Link>
           </div>
         </div>
       </section>
@@ -567,17 +419,17 @@ export default function RentwellLandingPage() {
 
             <div className="text-center mb-6">
               <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-                {isSignUp ? t.modalSignupTitle : t.modalLoginTitle}
+                {isSignUp ? 'Create your RentWell account' : 'Sign in to RentWell'}
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                {isSignUp ? t.modalSignupDesc : t.modalLoginDesc}
+                {isSignUp ? 'Get started in under two minutes.' : 'Enter your credentials to continue.'}
               </p>
             </div>
 
             <form onSubmit={handleAuth} className="space-y-4">
               {isSignUp && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">{t.labelName}</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
                   <input
                     type="text"
                     required
@@ -590,7 +442,7 @@ export default function RentwellLandingPage() {
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">{t.labelEmail}</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
                 <input
                   type="email"
                   required
@@ -602,7 +454,7 @@ export default function RentwellLandingPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">{t.labelPass}</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Password</label>
                 <input
                   type="password"
                   required
@@ -630,12 +482,12 @@ export default function RentwellLandingPage() {
                 disabled={loading}
                 className="w-full py-3 bg-[#6EBE3B] hover:bg-[#5da730] text-slate-950 font-bold rounded-xl text-sm transition duration-150 disabled:opacity-50 mt-2 shadow-md shadow-[#6EBE3B]/20"
               >
-                {loading ? 'Processing...' : isSignUp ? t.btnCreateAcc : t.btnSignIn}
+                {loading ? 'Processing...' : isSignUp ? 'Create Account' : 'Sign In'}
               </button>
             </form>
 
             <div className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400">
-              {isSignUp ? t.alreadyAcc : t.dontHaveAcc}{' '}
+              {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
               <button
                 onClick={() => {
                   setIsSignUp(!isSignUp);
@@ -643,7 +495,7 @@ export default function RentwellLandingPage() {
                 }}
                 className="text-[#002D56] dark:text-[#6EBE3B] font-bold hover:underline ml-1"
               >
-                {isSignUp ? t.navLogin : t.navSignup}
+                {isSignUp ? 'Log in' : 'Sign up'}
               </button>
             </div>
           </div>
